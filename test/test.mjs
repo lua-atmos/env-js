@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
-import http from 'node:http';
-import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { resolve, dirname, extname } from 'node:path';
+import { resolve, dirname } from 'node:path';
 import puppeteer from 'puppeteer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,30 +11,10 @@ const LOADING = ['Loading...', 'Running...', 'Compiling...'];
 const TIMEOUT = 30_000;
 const POLL = 100;
 
-const MIME = {
-    '.html': 'text/html',
-    '.js':   'application/javascript',
-    '.lua':  'text/plain',
-};
-
-function startServer () {
-    return new Promise(ok => {
-        const srv = http.createServer((req, res) => {
-            const filePath = resolve(HTML_DIR, req.url.slice(1));
-            const ext = extname(filePath);
-            res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
-            fs.createReadStream(filePath)
-                .on('error', () => { res.writeHead(404); res.end(); })
-                .pipe(res);
-        });
-        srv.listen(0, '127.0.0.1', () => ok(srv));
-    });
-}
-
-function pageUrl (server, name, code) {
-    const { port } = server.address();
+function pageUrl (name, code) {
+    const abs = resolve(HTML_DIR, name);
     const hash = Buffer.from(code).toString('base64');
-    return `http://127.0.0.1:${port}/${name}#${hash}`;
+    return `file://${abs}#${hash}`;
 }
 
 async function waitStatus (page) {
@@ -52,11 +30,12 @@ async function waitStatus (page) {
 }
 
 async function run () {
-    const server = await startServer();
-
     const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox'],
+        args: [
+            '--no-sandbox',
+            '--allow-file-access-from-files',
+        ],
     });
 
     let failed = false;
@@ -64,7 +43,7 @@ async function run () {
     for (const tier of TIERS) {
         // Happy path
         const page1 = await browser.newPage();
-        const url1 = pageUrl(server, tier, 'print("hello")');
+        const url1 = pageUrl(tier, 'print("hello")');
         await page1.goto(url1, {
             waitUntil: 'domcontentloaded',
         });
@@ -86,7 +65,7 @@ async function run () {
 
         // Error path
         const page2 = await browser.newPage();
-        const url2 = pageUrl(server, tier, 'invalid!!!lua');
+        const url2 = pageUrl(tier, 'invalid!!!lua');
         await page2.goto(url2, {
             waitUntil: 'domcontentloaded',
         });
@@ -108,7 +87,6 @@ async function run () {
     }
 
     await browser.close();
-    server.close();
     if (failed) process.exit(1);
 }
 
