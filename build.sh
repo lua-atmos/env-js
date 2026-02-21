@@ -17,7 +17,7 @@ LUA_ATMOS_MODULES=(
     'atmos.run       lua-atmos/atmos      main  atmos/run.lua'
     'atmos.streams   lua-atmos/atmos      main  atmos/streams.lua'
     'atmos.x         lua-atmos/atmos      main  atmos/x.lua'
-    'atmos.env.js    fsantanna/env-js     main  init.lua'
+    'atmos.env.js    lua-atmos/env-js     main  init.lua'
 )
 
 ATMOS_LANG_MODULES=(
