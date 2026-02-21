@@ -4,9 +4,6 @@ set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 JS_DIR="$DIR"
 OUT_DIR="$DIR"
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
-
 VERSION="v0.5"
 
 GITHUB_RAW="https://raw.githubusercontent.com"
@@ -37,20 +34,10 @@ ATMOS_LANG_MODULES=(
 
 # --- Helpers ---
 
-fetch_module () {
+module_tag () {
     local name="$1" repo="$2" version="$3" path="$4"
     local url="$GITHUB_RAW/$repo/$version/$path"
-    local dest="$TMP/$name.lua"
-    echo "  fetch $name ($repo/$path)"
-    curl -fsSL "$url" -o "$dest"
-}
-
-module_tag () {
-    local name="$1"
-    local src="$TMP/$name.lua"
-    printf '    <script type="text/lua" data-module="%s">\n' "$name"
-    cat "$src"
-    printf '\n    </script>\n'
+    printf '    <script type="text/lua" data-module="%s" src="%s"></script>\n' "$name" "$url"
 }
 
 generate_html () {
@@ -79,32 +66,18 @@ ENDHTML
     echo "  wrote $out"
 }
 
-# --- Fetch modules ---
-
-echo "Fetching lua-atmos runtime modules..."
-for entry in "${LUA_ATMOS_MODULES[@]}"; do
-    read -r name repo version path <<< "$entry"
-    fetch_module "$name" "$repo" "$version" "$path"
-done
-
-echo "Fetching atmos-lang compiler modules..."
-for entry in "${ATMOS_LANG_MODULES[@]}"; do
-    read -r name repo version path <<< "$entry"
-    fetch_module "$name" "$repo" "$version" "$path"
-done
-
 # --- Build module tags ---
 
 RUNTIME_TAGS=""
 for entry in "${LUA_ATMOS_MODULES[@]}"; do
-    read -r name _ _ <<< "$entry"
-    RUNTIME_TAGS+="$(module_tag "$name")"$'\n'
+    read -r name repo version path <<< "$entry"
+    RUNTIME_TAGS+="$(module_tag "$name" "$repo" "$version" "$path")"$'\n'
 done
 
 COMPILER_TAGS=""
 for entry in "${ATMOS_LANG_MODULES[@]}"; do
-    read -r name _ _ <<< "$entry"
-    COMPILER_TAGS+="$(module_tag "$name")"$'\n'
+    read -r name repo version path <<< "$entry"
+    COMPILER_TAGS+="$(module_tag "$name" "$repo" "$version" "$path")"$'\n'
 done
 
 # --- Generate HTML files ---

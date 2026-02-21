@@ -30,8 +30,12 @@ async function preloadModules (lua) {
         'script[type="text/lua"]'
     );
     for (const el of tags) {
+        const src = el.getAttribute('src');
+        const text = src
+            ? await fetch(src).then(r => r.text())
+            : el.textContent;
         lua.global.set('JS_mod_name', el.dataset.module);
-        lua.global.set('JS_mod_src',  el.textContent);
+        lua.global.set('JS_mod_src',  text);
         await lua.doString(
             'package.preload[JS_mod_name]'
             + ' = assert(load(JS_mod_src,'
