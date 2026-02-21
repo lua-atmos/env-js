@@ -29,7 +29,7 @@ jobs:
           path: ~/.cache/puppeteer
           key: puppeteer-${{ runner.os }}-${{ hashFiles('test/package.json') }}
       - name: Install dependencies
-        run: cd test && npm ci
+        run: cd test && npm install
       - name: Build HTML files
         run: bash build.sh
       - name: Run Puppeteer tests
