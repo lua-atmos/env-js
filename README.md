@@ -10,7 +10,17 @@ Browser-based runners for Lua and Atmos programs. Source code is passed as a bas
 | `lua-atmos.html` | Lua | lua-atmos |
 | `atmos.html` | Atmos (`.atm`) | lua-atmos + compiler |
 
-## Usage
+## Local Usage
+
+```
+./run.sh --mode=lua exs/hello.lua               # bare Lua
+./run.sh --mode=lua-atmos exs/hello-atmos.lua   # lua-atmos
+./run.sh --mode=atmos exs/hello.atm             # atmos-lang
+```
+
+Opens the program in your default browser.
+
+## Remote Usage
 
 Open any HTML file with a `#<base64>` fragment:
 
@@ -18,24 +28,14 @@ Open any HTML file with a `#<base64>` fragment:
 lua.html#cHJpbnQoImhlbGxvIik=
 ```
 
-The fragment is the base64-encoded source code. Output goes to the `<pre id="output">` element; status goes to `<span id="status">`.
+The fragment is the base64-encoded source code. Status goes to `<span id="status">`; output goes to `<pre id="output">`.
 
-## Running a file
-
-```
-./run.sh hello.lua                    # default: lua-atmos mode
-./run.sh --mode=lua hello.lua         # bare Lua
-./run.sh --mode=atmos hello.atm       # Atmos compiler
-```
-
-Opens the program in your default browser.
-
-## Generating a hash
+### Generating a hash
 
 From a source file (`.lua` or `.atm`):
 
 ```
-base64 -w0 < hello.lua
+base64 -w0 < exs/hello.lua
 ```
 
 Or inline:
