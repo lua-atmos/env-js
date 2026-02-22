@@ -20,6 +20,16 @@ lua.html#cHJpbnQoImhlbGxvIik=
 
 The fragment is the base64-encoded source code. Output goes to the `<pre id="output">` element; status goes to `<span id="status">`.
 
+## Running a file
+
+```
+./run.sh hello.lua                    # default: lua-atmos mode
+./run.sh --mode=lua hello.lua         # bare Lua
+./run.sh --mode=atmos hello.atm       # Atmos compiler
+```
+
+Opens the program in your default browser.
+
 ## Generating a hash
 
 From a source file (`.lua` or `.atm`):
