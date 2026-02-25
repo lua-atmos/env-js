@@ -28,8 +28,8 @@ generate_html () {
 <html>
 <head><title>$title</title></head>
 <body>
-    <pre id="output"></pre>
     <span id="status"></span>
+    <pre id="output"></pre>
 
 $module_tags
     <script type="module">
