@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check HTML is up to date
         run: |
-          bash build-v0.5.sh
-          git diff --exit-code lua-v0.5.html lua-atmos-v0.5.html atmos-v0.5.html
+          bash build-main.sh
+          git diff --exit-code lua-main.html lua-atmos-main.html atmos-main.html
 
   js-test:
     runs-on: ubuntu-latest

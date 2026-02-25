@@ -2,11 +2,11 @@
 set -euo pipefail
 
 declare -A VERSIONS=(
-    [overall]=v0.5
-    [lua-atmos/f-streams]=v0.2
-    [lua-atmos/atmos]=v0.5
-    [lua-atmos/env-js]=v0.5
-    [atmos-lang/atmos]=v0.5
+    [overall]=main
+    [lua-atmos/f-streams]=main
+    [lua-atmos/atmos]=main
+    [lua-atmos/env-js]=main
+    [atmos-lang/atmos]=main
 )
 
 LUA_ATMOS_MODULES=(

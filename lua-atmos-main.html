@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head><title>Lua</title></head>
+<head><title>lua-atmos</title></head>
 <body>
     <span id="status"></span>
     <pre id="output"></pre>
 
+    <script type="text/lua" data-module="streams" src="https://raw.githubusercontent.com/lua-atmos/f-streams/main/streams/init.lua"></script>
+    <script type="text/lua" data-module="atmos" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/init.lua"></script>
+    <script type="text/lua" data-module="atmos.util" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/util.lua"></script>
+    <script type="text/lua" data-module="atmos.run" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/run.lua"></script>
+    <script type="text/lua" data-module="atmos.streams" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/streams.lua"></script>
+    <script type="text/lua" data-module="atmos.x" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/x.lua"></script>
+    <script type="text/lua" data-module="atmos.env.js" src="https://raw.githubusercontent.com/lua-atmos/env-js/main/init.lua"></script>
 
     <script type="module">
-// lua-atmos v0.5
+// lua-atmos main
 // run.js — shared utilities for all three tiers
 // Never used standalone; concatenated with a tier file by build.sh
 
@@ -80,7 +87,7 @@ function startLoop (lua) {
     }, 16);
     return interval;
 }
-// lua.js — bare Lua runner (no atmos)
+// lua-atmos.js — Lua code running under atmos runtime
 
 (async () => {
     const code = getCode();
@@ -88,11 +95,22 @@ function startLoop (lua) {
 
     status.textContent = 'Loading...';
     const lua = await createEngine();
+    await preloadModules(lua);
+    lua.global.set('JS_now', () => Date.now());
+
+    let interval;
+    lua.global.set('JS_close', () => clearInterval(interval));
 
     status.textContent = 'Running...';
     try {
-        await lua.doString(code);
-        status.textContent = 'Done.';
+        await lua.doString(
+            'JS_env = require("atmos.env.js")\n'
+            + 'start(function()\n'
+            + code + '\n'
+            + 'JS_done = true\n'
+            + 'end)'
+        );
+        interval = startLoop(lua);
     } catch (e) {
         output.textContent += 'ERROR: ' + e.message + '\n';
         status.textContent = 'Error.';
