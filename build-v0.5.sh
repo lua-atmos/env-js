@@ -2,10 +2,10 @@
 set -euo pipefail
 
 declare -A VERSIONS=(
-    [overall]=v0.5
+    [overall]=v0.5.1
     [lua-atmos/f-streams]=v0.2
     [lua-atmos/atmos]=v0.5
-    [lua-atmos/env-js]=v0.5
+    [lua-atmos/env-js]=v0.5.1
     [atmos-lang/atmos]=v0.5
 )
 
