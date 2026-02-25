@@ -2,25 +2,27 @@
 set -euo pipefail
 
 MODE=""
+VERSION=""
 while [[ "${1:-}" == --* ]]; do
     case "$1" in
-        --mode=*) MODE="${1#--mode=}" ; shift ;;
-        *)        echo "Unknown option: $1"; exit 1 ;;
+        --mode=*)    MODE="${1#--mode=}" ; shift ;;
+        --version=*) VERSION="${1#--version=}" ; shift ;;
+        *)           echo "Unknown option: $1"; exit 1 ;;
     esac
 done
 
-if [ -z "$MODE" ]; then
-    echo "Usage: run.sh --mode=lua|lua-atmos|atmos FILE"
+if [ -z "$MODE" ] || [ -z "$VERSION" ]; then
+    echo "Usage: run.sh --version=VERSION --mode=lua|lua-atmos|atmos FILE"
     exit 1
 fi
 
-FILE="${1:?Usage: run.sh --mode=lua|lua-atmos|atmos FILE}"
+FILE="${1:?Usage: run.sh --version=VERSION --mode=lua|lua-atmos|atmos FILE}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
-HTML="$DIR/$MODE.html"
+HTML="$DIR/$MODE-$VERSION.html"
 
 if [ ! -f "$HTML" ]; then
     echo "No such runner: $HTML"
-    echo "Run 'bash build.sh' first."
+    echo "Run 'bash build-$VERSION.sh' first."
     exit 1
 fi
 

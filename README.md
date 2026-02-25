@@ -6,16 +6,16 @@ Browser-based runners for Lua and Atmos programs. Source code is passed as a bas
 
 | File | Input language | Runtime |
 |------|---|---|
-| `lua.html` | Lua | bare Lua |
-| `lua-atmos.html` | Lua | lua-atmos |
-| `atmos.html` | Atmos (`.atm`) | lua-atmos + compiler |
+| `lua-v0.5.html` | Lua | bare Lua |
+| `lua-atmos-v0.5.html` | Lua | lua-atmos |
+| `atmos-v0.5.html` | Atmos (`.atm`) | lua-atmos + compiler |
 
 ## Local Usage
 
 ```
-./run.sh --mode=lua exs/hello.lua               # bare Lua
-./run.sh --mode=lua-atmos exs/hello-atmos.lua   # lua-atmos
-./run.sh --mode=atmos exs/hello.atm             # atmos-lang
+./run.sh --version=v0.5 --mode=lua exs/hello.lua               # bare Lua
+./run.sh --version=v0.5 --mode=lua-atmos exs/hello-atmos.lua   # lua-atmos
+./run.sh --version=v0.5 --mode=atmos exs/hello.atm             # atmos-lang
 ```
 
 Opens the program in your default browser.
@@ -25,7 +25,7 @@ Opens the program in your default browser.
 Open any HTML file with a `#<base64>` fragment:
 
 ```
-lua.html#cHJpbnQoImhlbGxvIik=
+lua-v0.5.html#cHJpbnQoImhlbGxvIik=
 ```
 
 The fragment is the base64-encoded source code. Status goes to `<span id="status">`; output goes to `<pre id="output">`.
@@ -47,13 +47,13 @@ echo -n 'print("hello")' | base64 -w0
 Append the result after `#` in the URL:
 
 ```
-file:///path/to/lua.html#cHJpbnQoImhlbGxvIik=
+file:///path/to/lua-v0.5.html#cHJpbnQoImhlbGxvIik=
 ```
 
 ## Rebuilding
 
 ```
-./build.sh
+./build-v0.5.sh
 ```
 
 Fetches all runtime and compiler modules from GitHub and regenerates the three HTML files.
