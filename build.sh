@@ -1,36 +1,8 @@
-#!/bin/bash
-set -euo pipefail
-
-DIR="$(cd "$(dirname "$0")" && pwd)"
-JS_DIR="$DIR"
-OUT_DIR="$DIR"
-VERSION="v0.5"
+# Shared build logic for lua-atmos HTML generation.
+# Expects caller to define: VERSIONS, LUA_ATMOS_MODULES,
+# ATMOS_LANG_MODULES.
 
 GITHUB_RAW="https://raw.githubusercontent.com"
-
-# --- Module lists (name  repo  version  path) ---
-
-LUA_ATMOS_MODULES=(
-    'streams         lua-atmos/f-streams  main  streams/init.lua'
-    'atmos           lua-atmos/atmos      main  atmos/init.lua'
-    'atmos.util      lua-atmos/atmos      main  atmos/util.lua'
-    'atmos.run       lua-atmos/atmos      main  atmos/run.lua'
-    'atmos.streams   lua-atmos/atmos      main  atmos/streams.lua'
-    'atmos.x         lua-atmos/atmos      main  atmos/x.lua'
-    'atmos.env.js    lua-atmos/env-js     main  init.lua'
-)
-
-ATMOS_LANG_MODULES=(
-    'atmos.lang.global   atmos-lang/atmos  main  src/global.lua'
-    'atmos.lang.aux      atmos-lang/atmos  main  src/aux.lua'
-    'atmos.lang.lexer    atmos-lang/atmos  main  src/lexer.lua'
-    'atmos.lang.parser   atmos-lang/atmos  main  src/parser.lua'
-    'atmos.lang.prim     atmos-lang/atmos  main  src/prim.lua'
-    'atmos.lang.coder    atmos-lang/atmos  main  src/coder.lua'
-    'atmos.lang.tosource atmos-lang/atmos  main  src/tosource.lua'
-    'atmos.lang.exec     atmos-lang/atmos  main  src/exec.lua'
-    'atmos.lang.run      atmos-lang/atmos  main  src/run.lua'
-)
 
 # --- Helpers ---
 
@@ -43,12 +15,15 @@ module_tag () {
 generate_html () {
     local title="$1" module_tags="$2" js_files="$3" out="$4"
 
-    local js_code="// lua-atmos $VERSION"$'\n'
+    local base="${out%.html}"
+    local vout="${base}-${VERSIONS[overall]}.html"
+
+    local js_code="// lua-atmos ${VERSIONS[overall]}"$'\n'
     for f in $js_files; do
         js_code+="$(cat "$f")"$'\n'
     done
 
-    cat > "$out" <<ENDHTML
+    cat > "$vout" <<ENDHTML
 <!DOCTYPE html>
 <html>
 <head><title>$title</title></head>
@@ -63,7 +38,7 @@ $js_code
 </body>
 </html>
 ENDHTML
-    echo "  wrote $out"
+    echo "  wrote $vout"
 }
 
 # --- Build module tags ---
@@ -87,19 +62,19 @@ echo "Generating HTML files..."
 generate_html \
     "Lua" \
     "" \
-    "$JS_DIR/run.js $JS_DIR/lua.js" \
-    "$OUT_DIR/lua.html"
+    "./run.js ./lua.js" \
+    "./lua.html"
 
 generate_html \
     "lua-atmos" \
     "$RUNTIME_TAGS" \
-    "$JS_DIR/run.js $JS_DIR/lua-atmos.js" \
-    "$OUT_DIR/lua-atmos.html"
+    "./run.js ./lua-atmos.js" \
+    "./lua-atmos.html"
 
 generate_html \
     "Atmos" \
     "${RUNTIME_TAGS}${COMPILER_TAGS}" \
-    "$JS_DIR/run.js $JS_DIR/atmos.js" \
-    "$OUT_DIR/atmos.html"
+    "./run.js ./atmos.js" \
+    "./atmos.html"
 
 echo "Done."

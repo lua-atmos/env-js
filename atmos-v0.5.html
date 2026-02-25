@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><title>lua-atmos</title></head>
+<head><title>Atmos</title></head>
 <body>
-    <span id="status"></span>
     <pre id="output"></pre>
+    <span id="status"></span>
 
     <script type="text/lua" data-module="streams" src="https://raw.githubusercontent.com/lua-atmos/f-streams/main/streams/init.lua"></script>
     <script type="text/lua" data-module="atmos" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/init.lua"></script>
@@ -12,6 +12,15 @@
     <script type="text/lua" data-module="atmos.streams" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/streams.lua"></script>
     <script type="text/lua" data-module="atmos.x" src="https://raw.githubusercontent.com/lua-atmos/atmos/main/atmos/x.lua"></script>
     <script type="text/lua" data-module="atmos.env.js" src="https://raw.githubusercontent.com/lua-atmos/env-js/main/init.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.global" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/global.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.aux" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/aux.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.lexer" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/lexer.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.parser" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/parser.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.prim" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/prim.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.coder" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/coder.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.tosource" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/tosource.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.exec" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/exec.lua"></script>
+    <script type="text/lua" data-module="atmos.lang.run" src="https://raw.githubusercontent.com/atmos-lang/atmos/main/src/run.lua"></script>
 
     <script type="module">
 // lua-atmos v0.5
@@ -87,7 +96,7 @@ function startLoop (lua) {
     }, 16);
     return interval;
 }
-// lua-atmos.js — Lua code running under atmos runtime
+// atmos.js — compile .atm source, then run under atmos runtime
 
 (async () => {
     const code = getCode();
@@ -101,13 +110,29 @@ function startLoop (lua) {
     let interval;
     lua.global.set('JS_close', () => clearInterval(interval));
 
-    status.textContent = 'Running...';
+    status.textContent = 'Compiling...';
     try {
         await lua.doString(
+            'atmos = require "atmos"\n'
+            + 'X = require "atmos.x"\n'
+            + 'require "atmos.lang.exec"\n'
+            + 'require "atmos.lang.run"'
+        );
+
+        const wrapped =
+            '(func (...) { ' + code + '\n})(...)';
+        lua.global.set('JS_src', wrapped);
+        lua.global.set('JS_file', 'input.atm');
+
+        status.textContent = 'Running...';
+        await lua.doString(
             'JS_env = require("atmos.env.js")\n'
+            + 'local f, err = '
+            + 'atm_loadstring(JS_src, JS_file)\n'
+            + 'if not f then error(err) end\n'
             + 'start(function()\n'
-            + code + '\n'
-            + 'JS_done = true\n'
+            + '    f()\n'
+            + '    JS_done = true\n'
             + 'end)'
         );
         interval = startLoop(lua);
