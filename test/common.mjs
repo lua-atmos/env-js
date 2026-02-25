@@ -6,18 +6,17 @@ import puppeteer from 'puppeteer';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const HTML_DIR = resolve(__dirname, '..');
 
-const TIERS = ['lua.html', 'lua-atmos.html', 'atmos.html'];
 const LOADING = ['Loading...', 'Running...', 'Compiling...'];
 const TIMEOUT = 30_000;
 const POLL = 100;
 
-function pageUrl (name, code) {
-    const abs = resolve(HTML_DIR, name);
+export function pageUrl (htmlDir, name, code) {
+    const abs = resolve(htmlDir, name);
     const hash = Buffer.from(code).toString('base64');
     return `file://${abs}#${hash}`;
 }
 
-async function waitStatus (page) {
+export async function waitStatus (page) {
     const t0 = Date.now();
     while (Date.now() - t0 < TIMEOUT) {
         const txt = await page.$eval(
@@ -29,7 +28,7 @@ async function waitStatus (page) {
     throw new Error('timeout waiting for status');
 }
 
-async function run () {
+export async function runTests (tiers) {
     const browser = await puppeteer.launch({
         headless: true,
         args: [
@@ -40,10 +39,10 @@ async function run () {
 
     let failed = false;
 
-    for (const tier of TIERS) {
+    for (const tier of tiers) {
         // Happy path
         const page1 = await browser.newPage();
-        const url1 = pageUrl(tier, 'print("hello")');
+        const url1 = pageUrl(HTML_DIR, tier, 'print("hello")');
         await page1.goto(url1, {
             waitUntil: 'domcontentloaded',
         });
@@ -65,7 +64,7 @@ async function run () {
 
         // Error path
         const page2 = await browser.newPage();
-        const url2 = pageUrl(tier, 'invalid!!!lua');
+        const url2 = pageUrl(HTML_DIR, tier, 'invalid!!!lua');
         await page2.goto(url2, {
             waitUntil: 'domcontentloaded',
         });
@@ -89,5 +88,3 @@ async function run () {
     await browser.close();
     if (failed) process.exit(1);
 }
-
-run();
