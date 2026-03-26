@@ -3,13 +3,28 @@
 Browser-based runners for Lua and Atmos programs.
 Source code is passed as a base64 hash in the URL fragment.
 
+## Versions
+
+Each version has its own set of HTML files under `out/<version>/`.
+The version determines which release of the Lua and Atmos
+runtimes are fetched during the build.
+
+Available versions:
+
+| Version | Directory   | Description                   |
+| ------- | ----------- | ----------------------------- |
+| `main`  | `out/main/` | Latest development (unstable) |
+| `v0.6`  | `out/v0.6/` | Atmos v0.6 release (stable)   |
+
 ## HTML files
 
-| Path                       | Input language | Runtime              |
-|----------------------------|----------------|----------------------|
-| `out/main/lua.html`        | Lua            | bare Lua             |
-| `out/main/lua-atmos.html`  | Lua            | lua-atmos            |
-| `out/main/atmos.html`      | Atmos (`.atm`) | lua-atmos + compiler |
+Each version contains three HTML tiers:
+
+| Path                   | Input language | Runtime              |
+| ---------------------- | -------------- | -------------------- |
+| `<ver>/lua.html`       | Lua            | bare Lua             |
+| `<ver>/lua-atmos.html` | Lua            | lua-atmos            |
+| `<ver>/atmos.html`     | Atmos (`.atm`) | lua-atmos + compiler |
 
 ## Local Usage
 
