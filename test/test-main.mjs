@@ -1,9 +1,9 @@
 import { runTests } from './common.mjs';
 
 const TIERS = [
-    'lua-main.html',
-    'lua-atmos-main.html',
-    'atmos-main.html',
+    'out/main/lua.html',
+    'out/main/lua-atmos.html',
+    'out/main/atmos.html',
 ];
 
 runTests(TIERS);
