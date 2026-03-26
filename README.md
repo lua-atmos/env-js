@@ -1,21 +1,22 @@
 # env-js
 
-Browser-based runners for Lua and Atmos programs. Source code is passed as a base64 hash in the URL fragment.
+Browser-based runners for Lua and Atmos programs.
+Source code is passed as a base64 hash in the URL fragment.
 
 ## HTML files
 
-| File | Input language | Runtime |
-|------|---|---|
-| `lua-v0.5.html` | Lua | bare Lua |
-| `lua-atmos-v0.5.html` | Lua | lua-atmos |
-| `atmos-v0.5.html` | Atmos (`.atm`) | lua-atmos + compiler |
+| Path                       | Input language | Runtime              |
+|----------------------------|----------------|----------------------|
+| `out/main/lua.html`        | Lua            | bare Lua             |
+| `out/main/lua-atmos.html`  | Lua            | lua-atmos            |
+| `out/main/atmos.html`      | Atmos (`.atm`) | lua-atmos + compiler |
 
 ## Local Usage
 
 ```
-./run.sh --version=v0.5 --mode=lua exs/hello.lua               # bare Lua
-./run.sh --version=v0.5 --mode=lua-atmos exs/hello-atmos.lua   # lua-atmos
-./run.sh --version=v0.5 --mode=atmos exs/hello.atm             # atmos-lang
+./run.sh --version=main --mode=lua exs/hello.lua
+./run.sh --version=main --mode=lua-atmos exs/hello-atmos.lua
+./run.sh --version=main --mode=atmos exs/hello.atm
 ```
 
 Opens the program in your default browser.
@@ -25,10 +26,18 @@ Opens the program in your default browser.
 Open any HTML file with a `#<base64>` fragment:
 
 ```
-lua-v0.5.html#cHJpbnQoImhlbGxvIik=
+https://<url>/out/main/lua.html#cHJpbnQoImhlbGxvIik=
 ```
 
-The fragment is the base64-encoded source code. Status goes to `<span id="status">`; output goes to `<pre id="output">`.
+The fragment is the base64-encoded source code.
+Status goes to `<span id="status">`;
+output goes to `<pre id="output">`.
+
+For `dev.ceu-lang.org`, we renamed `out` to `env-js`:
+
+```
+https://www.dev.ceu-lang.org/env-js/main/lua.html#cHJpbnQoImhlbGxvIik=
+```
 
 ### Generating a hash
 
@@ -47,13 +56,14 @@ echo -n 'print("hello")' | base64 -w0
 Append the result after `#` in the URL:
 
 ```
-file:///path/to/lua-v0.5.html#cHJpbnQoImhlbGxvIik=
+file:///<env-js>/out/main/lua.html#cHJpbnQoImhlbGxvIik=
 ```
 
 ## Rebuilding
 
 ```
-./build-v0.5.sh
+./build-main.sh
 ```
 
-Fetches all runtime and compiler modules from GitHub and regenerates the three HTML files.
+Fetches all runtime and compiler modules from GitHub and
+regenerates the three HTML files.

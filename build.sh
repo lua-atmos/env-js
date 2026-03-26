@@ -13,10 +13,11 @@ module_tag () {
 }
 
 generate_html () {
-    local title="$1" module_tags="$2" js_files="$3" out="$4"
+    local title="$1" module_tags="$2" js_files="$3" mode="$4"
 
-    local base="${out%.html}"
-    local vout="${base}-${VERSIONS[overall]}.html"
+    local dir="./out/${VERSIONS[overall]}"
+    mkdir -p "$dir"
+    local vout="$dir/$mode.html"
 
     local js_code="// lua-atmos ${VERSIONS[overall]}"$'\n'
     for f in $js_files; do
@@ -63,18 +64,18 @@ generate_html \
     "Lua" \
     "" \
     "./run.js ./lua.js" \
-    "./lua.html"
+    "lua"
 
 generate_html \
     "lua-atmos" \
     "$RUNTIME_TAGS" \
     "./run.js ./lua-atmos.js" \
-    "./lua-atmos.html"
+    "lua-atmos"
 
 generate_html \
     "Atmos" \
     "${RUNTIME_TAGS}${COMPILER_TAGS}" \
     "./run.js ./atmos.js" \
-    "./atmos.html"
+    "atmos"
 
 echo "Done."

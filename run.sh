@@ -18,7 +18,7 @@ fi
 
 FILE="${1:?Usage: run.sh --version=VERSION --mode=lua|lua-atmos|atmos FILE}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
-HTML="$DIR/$MODE-$VERSION.html"
+HTML="$DIR/out/$VERSION/$MODE.html"
 
 if [ ! -f "$HTML" ]; then
     echo "No such runner: $HTML"
