@@ -14,7 +14,9 @@ jobs:
       - name: Check HTML is up to date
         run: |
           bash build-main.sh
-          git diff --exit-code lua-main.html lua-atmos-main.html atmos-main.html
+          git diff --exit-code out/main/
+          bash build-v0.6.sh
+          git diff --exit-code out/v0.6/
 
   js-test:
     runs-on: ubuntu-latest
