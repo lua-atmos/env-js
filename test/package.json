@@ -5,6 +5,6 @@
         "puppeteer": "^24.0.0"
     },
     "scripts": {
-        "test": "node test-main.mjs"
+        "test": "node test-main.mjs && node test-v0.6.mjs"
     }
 }

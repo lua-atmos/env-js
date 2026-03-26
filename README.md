@@ -67,3 +67,26 @@ file:///<env-js>/out/main/lua.html#cHJpbnQoImhlbGxvIik=
 
 Fetches all runtime and compiler modules from GitHub and
 regenerates the three HTML files.
+
+## Testing
+
+### Local
+
+```
+cd test && npm ci && npm test
+```
+
+Runs Puppeteer (headless Chrome) against all HTML tiers in
+`out/main/` and `out/v0.6/`.
+Each tier runs two scenarios: a happy path (`print("hello")`)
+and an error path (invalid syntax).
+
+### CI/CD
+
+GitHub Actions (`.github/workflows/test.yml`) runs on every
+push and PR to `main`:
+
+| Job       | What it does                                   |
+| --------- | ---------------------------------------------- |
+| `build`   | Rebuilds HTML, checks `out/` matches committed |
+| `js-test` | Runs the Puppeteer tests with Node 22          |
